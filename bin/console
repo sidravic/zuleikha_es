@@ -1,0 +1,34 @@
+#!/usr/bin/env node
+
+process.env.NODE_ENV = 'REPL';
+var server = require('./../app.js');
+
+
+
+server.listen(process.env.PORT, function(){
+    console.log('Starting node console on port ' + server.address().port);
+    var repl = require('repl');
+    var ourRepl = repl.start({
+        prompt: 'event-store >'
+    })
+
+    ourRepl.on('exit', function(){
+        console.log('Goodbye...');
+        process.exit(0);
+    })
+
+    P = require('./../lib/datastores/rethinkdb/persistence.js');
+
+    for(i = 0; i < 400; i ++) {
+        setTimeout(function(){
+            var time = new Date();
+            var datadump = Math.random() * 1000;
+
+            var saveValue = P.save('test_stream', {datadump: datadump, time: time});
+            console.log(saveValue.value);
+        }, 1000)
+    }
+});
+
+
+
