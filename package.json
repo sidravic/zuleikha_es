@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "c": "bin/console"
   },
   "author": "",
   "license": "ISC",
@@ -13,14 +13,12 @@
     "bucker": "^1.1.1",
     "deasync": "^0.1.0",
     "fibers": "^1.0.6",
+    "hapi": "^8.8.0",
     "lodash": "^3.10.0",
     "reheat": "^1.0.0-beta.10",
     "rethinkdb": "^2.0.2",
     "rethinkdbdash": "^2.0.16",
     "servicebus": "^1.0.17",
     "thinky": "^2.0.8"
-  },
-  "scripts": {
-    "c": "bin/console"
   }
 }
