@@ -6,7 +6,7 @@ var rabbitMQUrl = databaseConfig.rabbitmq_url
 
 
 var bus = require('servicebus').bus({url: rabbitMQUrl,
-                                     enabledConfirms: true});
+                                     enableConfirm: true});
 bus.use(bus.package());
 bus.use(bus.correlate());
 bus.use(bus.retry());

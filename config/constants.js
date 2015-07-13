@@ -1,7 +1,9 @@
 var Constants = {
     eventsTableName: 'events',
     eventSeqTableName: 'event_sequences',
-    eventsAttributeStream: 'stream'
+    accountsTableName: 'accounts',
+    streamsTableName: 'event_streams',
+    eventsAttributeStream: 'stream_name'
 }
 
 module.exports = Constants;

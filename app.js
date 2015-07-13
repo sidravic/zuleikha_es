@@ -5,8 +5,8 @@ var util = require('util');
 var C = require('./lib/datastores/rethinkdb/connection.js');
 var server = new Hapi.Server();
 
-
 C.createConnection(startServer);
+module.exports = server;
 
 function startServer(dbConn){
     console.log("Start server started Connection Open " + dbConn.open);
@@ -15,6 +15,7 @@ function startServer(dbConn){
         server.connection({port: 4005});
         server.start(function(){
             console.log('Server connected to port ' + server.info.uri);
+
 
             //var C = require('./lib/datastores/rethinkdb/changes.js');
             //
@@ -41,6 +42,30 @@ function startServer(dbConn){
             //
             //    }, 12)
             //}, 4000)
+
+            var serviceBus = require('./config/servicebus.js');
+            var commandListenerService = require('./services/command_listener_service.js');
+            commandListenerService.init();
+
+            console.log('Subscribing...');
+            console.log('subscribing...');
+            var i = 0;
+            setInterval(function(){
+                ++i;
+
+                serviceBus.publish('eventstore.commands', {
+                    accountId: '42d19749-fb48-4373-8f7a-b80170255644',
+                    streamName: 'test_stream',
+                    command: 'createNewStream',
+                    id: i,
+                    payload: {
+                        name: 'siddharth',
+                        email: 'siddharth@idyllic-software.com',
+                        age: 31
+                    }
+                })
+            }, 3000)
+
 
 
         });
