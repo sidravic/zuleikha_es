@@ -58,7 +58,10 @@ var validateAndPersist = function(accountId, streamName,
     ], function(err, persistedEvent){
         debugger;
         if(err && (err.name == 'ValidationError'))
-            cb(err, null);
+            cb(err, persistedEvent);
+        else if(err)
+            cb(err, {accountId: accountId,
+                     stream: streamName});
         else
             cb(null, persistedEvent);
     })
@@ -68,10 +71,10 @@ var validateAndPersist = function(accountId, streamName,
 
 var ValidateAndPersistPipelineService = {
     save: function(accountId, streamName, eventAttributes, cb){
-        debugger;
-        validateAndPersist(accountId, streamName, eventAttributes, function(err, result){
-            debugger;
-        })
+        validateAndPersist(accountId, streamName,
+                           eventAttributes, function(err, result){
+            cb(err, result);
+        });
     }
 }
 
