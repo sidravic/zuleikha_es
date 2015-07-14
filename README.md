@@ -10,7 +10,7 @@ name `notify.<stream-name>`
 # Issue
 
 ~~However, the stream crashes out because of excessive fiber creation. Migrating away from Fibers altogether~~
-Fibers issues have been resolved.
+Fibers issues have been resolved. No more fibers used. 
 
 # Progress
 
