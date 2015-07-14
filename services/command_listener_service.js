@@ -9,7 +9,7 @@ internals.createNewStreamRequested = constants.Commands.createNewStreamRequested
 var listen = function(){
     var sendNotification = function(accountId, streamName, status){
         var channel = nameGeneratorService.getQueueName(accountId, streamName)
-        debugger;
+
         if(status)
             serviceBus.publish(channel, {status: true})
         else
@@ -17,16 +17,11 @@ var listen = function(){
     }
 
     var onStreamCreated = function(err, streamCreateStatus, accountId, streamName){
-        if(err) {
-            console.log(err);
+        if(err)
             sendNotification(accountId, streamName, err);
-        }
-        else {
-            console.log("********************")
-            console.log(streamCreateStatus);
+        else
             sendNotification(accountId, streamName, true);
-            console.log("********************")
-        }
+
     }
 
     var onNewCommand = function(newCommand){
