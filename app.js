@@ -43,40 +43,44 @@ function startServer(dbConn){
             //    }, 12)
             //}, 4000)
 
-            var serviceBus = require('./config/servicebus.js');
-            var commandListenerService = require('./services/command_listener_service.js');
-            var constants = require('./config/constants.js');
-            commandListenerService.init();
+            //var serviceBus = require('./config/servicebus.js');
+            //var commandListenerService = require('./services/command_listener_service.js');
+            //var constants = require('./config/constants.js');
+            //commandListenerService.init();
+            //
+            //console.log('Subscribing...');
+            //console.log('subscribing...');
+            //var nameS = require('./services/name_generator_service.js');
+            //var channelName = nameS.getQueueName('42d19749-fb48-4373-8f7a-b80170255644',
+            //                                    'test_stream_9')
+            //serviceBus.subscribe(channelName, function(event){
+            //    console.log('++++++++++++++++')
+            //    console.log(event);
+            //    console.log('++++++++++++++++')
+            //});
+            //
+            //
+            //var i = 0;
+            //setInterval(function(){
+            //    ++i;
+            //
+            //    serviceBus.publish('eventstore.commands', {
+            //        accountId: '42d19749-fb48-4373-8f7a-b80170255644',
+            //        streamName: 'test_stream_9',
+            //        command: 'createNewStreamRequest',
+            //        id: i,
+            //        payload: {
+            //            name: 'siddharth',
+            //            email: 'siddharth@idyllic-software.com',
+            //            age: 31
+            //        }
+            //    })
+            //}, 3000)
 
-            console.log('Subscribing...');
-            console.log('subscribing...');
-            var nameS = require('./services/name_generator_service.js');
-            var channelName = nameS.getQueueName('42d19749-fb48-4373-8f7a-b80170255644',
-                                                'test_stream_9')
-            serviceBus.subscribe(channelName, function(event){
-                console.log('++++++++++++++++')
-                console.log(event);
-                console.log('++++++++++++++++')
-            });
 
-
-            var i = 0;
-            setInterval(function(){
-                ++i;
-
-                serviceBus.publish('eventstore.commands', {
-                    accountId: '42d19749-fb48-4373-8f7a-b80170255644',
-                    streamName: 'test_stream_9',
-                    command: 'createNewStreamRequest',
-                    id: i,
-                    payload: {
-                        name: 'siddharth',
-                        email: 'siddharth@idyllic-software.com',
-                        age: 31
-                    }
-                })
-            }, 3000)
-
+            var vp =  require('./services/validate_and_persist_pipeline_service.js');
+            vp.save('42d19749-fb48-4373-8f7a-b80170255644', 'test_stream_5',
+                { _createdAt: new Date() })
 
 
         });

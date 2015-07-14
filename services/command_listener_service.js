@@ -5,10 +5,11 @@ var eventStreamCreateService = require('./event_stream_create_service.js');
 var internals = {};
 
 internals.createNewStreamRequested = constants.Commands.createNewStreamRequested;
+internals.newEvent                 = constants.Commands.newEvent;
 
 var listen = function(){
     var sendNotification = function(accountId, streamName, status){
-        var channel = nameGeneratorService.getQueueName(accountId, streamName)
+        var channel = nameGeneratorService.getQueueName(accountId, streamName) + ".responses"
 
         if(status)
             serviceBus.publish(channel, {status: true})
@@ -24,7 +25,26 @@ var listen = function(){
 
     }
 
+    var onNewEventValidated = function(err, validStatus, accountId, streamName){
+
+    }
+
     var onNewCommand = function(newCommand){
+        switch(newCommand.command){
+            case internals.createNewStreamRequested:
+                eventStreamCreateService.create(newCommand.accountId,
+                    newCommand.streamName,
+                    onStreamCreated
+                )
+                break;
+
+            case internals.newEvent:
+
+
+                break;
+
+        }
+
         if (newCommand.command == internals.createNewStreamRequested){
             eventStreamCreateService.create(newCommand.accountId,
                                             newCommand.streamName,
