@@ -45,6 +45,7 @@ function startServer(dbConn){
 
             var serviceBus = require('./config/servicebus.js');
             var commandListenerService = require('./services/command_listener_service.js');
+            var constants = require('./config/constants.js');
             commandListenerService.init();
 
             console.log('Subscribing...');
@@ -56,7 +57,7 @@ function startServer(dbConn){
                 serviceBus.publish('eventstore.commands', {
                     accountId: '42d19749-fb48-4373-8f7a-b80170255644',
                     streamName: 'test_stream',
-                    command: 'createNewStream',
+                    command: 'createNewStreamRequest',
                     id: i,
                     payload: {
                         name: 'siddharth',

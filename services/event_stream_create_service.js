@@ -7,6 +7,7 @@ var sequenceGeneratorService = require('./event_stream_sequence_create_service.j
 var async = require('async');
 var _ = require('lodash');
 var server = require('./../app.js');
+var util   = require('util');
 
 var internals = {};
 internals.eventStreamAndSequenceGenInitialized = false;
@@ -30,19 +31,24 @@ var createStream = function(tableName, callback){
                         primaryKey: 'sequence_id',
                         replicas: databaseConfig.replicaCount,
                         durability: 'hard'
-                    }).db(conn, cb);
+                    }).run(conn, cb);
             }
         ], function(err, result){
-            if(err)
+            if(err) {
+                console.log('[ERROR] ' + util.inspect(err));
                 callback(err, null);
-            else
+            }
+            else {
+                console.log('Stream Create ' + util.inspect(result));
                 callback(null, result);
+            }
         })
     })
 };
 
 var getTableName = function(accountId, streamName){
-    return accountId + "_" + streamName;
+    var aphlanumAccountId = accountId.toString().replace(/-/g, '');
+    return aphlanumAccountId + "_" + streamName;
 }
 
 var EventStreamService = {
@@ -69,7 +75,9 @@ var EventStreamService = {
         var onSequenceGeneratorCreateFinished = function(err, seqGenCreateStatus){
             if(!err) {
                 internals.eventStreamAndSequenceGenInitialized = true;
-            }
+                cb(null, seqGenCreateStatus)
+            }else
+                cb(err, null);
         };
 
         createStream(tableName, onStreamTableCreateFinished);
