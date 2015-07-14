@@ -7,6 +7,7 @@ var sequenceGeneratorService = require('./event_stream_sequence_create_service.j
 var async = require('async');
 var _ = require('lodash');
 var server = require('./../app.js');
+var nameGeneratorService = require('./name_generator_service.js')
 var util   = require('util');
 
 var internals = {};
@@ -16,7 +17,7 @@ var server = require('./../app.js');
 server.app.eventStreamAndSequenceGenInitialized = internals.eventStreamAndSequenceGenInitialized
 
 
-var createStream = function(tableName, callback){
+var createStream = function(tableName, accountId, streamName, callback){
     exec(function(conn){
         async.waterfall([
             function checkIfTableExists(cb){
@@ -36,20 +37,15 @@ var createStream = function(tableName, callback){
         ], function(err, result){
             if(err) {
                 console.log('[ERROR] ' + util.inspect(err));
-                callback(err, null);
+                callback(err, null, accountId, streamName);
             }
             else {
                 console.log('Stream Create ' + util.inspect(result));
-                callback(null, result);
+                callback(null, result, accountId, streamName);
             }
         })
     })
 };
-
-var getTableName = function(accountId, streamName){
-    var aphlanumAccountId = accountId.toString().replace(/-/g, '');
-    return aphlanumAccountId + "_" + streamName;
-}
 
 var EventStreamService = {
     /**
@@ -60,27 +56,29 @@ var EventStreamService = {
      *  table_name: event_streams
      *  primary_key: stream_name
      *  foreign_key: account_id
-     */
+     **/
     create: function(accountId, streamName, cb){
-        var tableName = getTableName(accountId, streamName);
+        var tableName = nameGeneratorService.getTableName(accountId, streamName);
 
-        var onStreamTableCreateFinished = function(err, tableCreateStatus) {
+        var onStreamTableCreateFinished = function(err, tableCreateStatus,
+                                                   accountId, streamName) {
             if(err)
                 cb(err, null);
             else
-                sequenceGeneratorService.create(tableName,
-                    onSequenceGeneratorCreateFinished);
+                sequenceGeneratorService.create(tableName, accountId,
+                                                streamName,
+                                                onSequenceGeneratorCreateFinished);
         };
 
-        var onSequenceGeneratorCreateFinished = function(err, seqGenCreateStatus){
+        var onSequenceGeneratorCreateFinished = function(err, seqGenCreateStatus, accountId, streamName){
             if(!err) {
                 internals.eventStreamAndSequenceGenInitialized = true;
-                cb(null, seqGenCreateStatus)
+                cb(null, seqGenCreateStatus, accountId, streamName)
             }else
-                cb(err, null);
+                cb(err, null, accountId, streamName);
         };
 
-        createStream(tableName, onStreamTableCreateFinished);
+        createStream(tableName, accountId, streamName, onStreamTableCreateFinished);
     }
 }
 

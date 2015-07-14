@@ -50,13 +50,23 @@ function startServer(dbConn){
 
             console.log('Subscribing...');
             console.log('subscribing...');
+            var nameS = require('./services/name_generator_service.js');
+            var channelName = nameS.getQueueName('42d19749-fb48-4373-8f7a-b80170255644',
+                                                'test_stream_9')
+            serviceBus.subscribe(channelName, function(event){
+                console.log('++++++++++++++++')
+                console.log(event);
+                console.log('++++++++++++++++')
+            });
+
+
             var i = 0;
             setInterval(function(){
                 ++i;
 
                 serviceBus.publish('eventstore.commands', {
                     accountId: '42d19749-fb48-4373-8f7a-b80170255644',
-                    streamName: 'test_stream',
+                    streamName: 'test_stream_9',
                     command: 'createNewStreamRequest',
                     id: i,
                     payload: {

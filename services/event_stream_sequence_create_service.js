@@ -27,9 +27,6 @@ var createSeqGen = function(tableName, callback){
             },
 
             function createSeqTable(tableExistsResult, cb){
-                debugger;
-                console.log('Table exists');
-                console.log(tableExistsResult);
                 if((tableExistsResult instanceof Array) && (tableExistsResult.length == 0))
                     r.table(eventSeqTableName).insert({
                         table_name: tableName,
@@ -51,9 +48,9 @@ var createSeqGen = function(tableName, callback){
 }
 
 var SequenceGeneratorService = {
-    create: function(tableName, cb){
+    create: function(tableName, accountId, streamName, cb){
         createSeqGen(tableName, function(err, seqGenCreatedStatus){
-            cb(err, seqGenCreatedStatus);
+            cb(err, seqGenCreatedStatus, accountId, streamName);
         })
     }
 }
