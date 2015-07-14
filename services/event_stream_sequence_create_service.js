@@ -10,7 +10,6 @@ var createSeqGen = function(tableName, callback){
         async.waterfall([
             function checkSequenceTableExists(cb){
                 conn.use(db.databaseName);
-
                 r.table(eventSeqTableName)
                     .filter({table_name: tableName})
                     .run(conn, function(err, cursor){
@@ -37,6 +36,9 @@ var createSeqGen = function(tableName, callback){
                         returnChanges: true,
                         conflict: 'error'
                         }).run(conn, cb);
+                else{
+                    cb(null, true);
+                }
             }
         ], function(err, result){
             if(err)
@@ -48,9 +50,9 @@ var createSeqGen = function(tableName, callback){
 }
 
 var SequenceGeneratorService = {
-    create: function(tableName, accountId, streamName, cb){
+    create: function(tableName, accountId, streamName, event, _cb){
         createSeqGen(tableName, function(err, seqGenCreatedStatus){
-            cb(err, seqGenCreatedStatus, accountId, streamName);
+            _cb(err, event, seqGenCreatedStatus, accountId, streamName);
         })
     }
 }

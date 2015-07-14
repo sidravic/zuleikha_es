@@ -5,7 +5,8 @@ var Constants = {
     streamsTableName: 'event_streams',
     eventsAttributeStream: 'stream_name',
     Commands: {
-        createNewStreamRequested: 'createNewStreamRequest'
+        createNewStreamRequested: 'createNewStreamRequest',
+        newEvent: 'newEvent'
     }
 }
 

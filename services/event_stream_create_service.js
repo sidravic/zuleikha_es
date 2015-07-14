@@ -37,7 +37,7 @@ var createStream = function(tableName, accountId, streamName, callback){
         ], function(err, result){
             if(err) {
                 console.log('[ERROR] ' + util.inspect(err));
-                callback(err, null, accountId, streamName);
+                callback(err, result, accountId, streamName);
             }
             else {
                 console.log('Stream Create ' + util.inspect(result));
@@ -60,22 +60,23 @@ var EventStreamService = {
     create: function(accountId, streamName, cb){
         var tableName = nameGeneratorService.getTableName(accountId, streamName);
 
-        var onStreamTableCreateFinished = function(err, tableCreateStatus,
-                                                   accountId, streamName) {
+        var onStreamTableCreateFinished = function(err, event, accountId,
+                                                   streamName) {
             if(err)
                 cb(err, null);
-            else
+            else {
                 sequenceGeneratorService.create(tableName, accountId,
-                                                streamName,
-                                                onSequenceGeneratorCreateFinished);
+                    streamName, event,
+                    onSequenceGeneratorCreateFinished);
+            }
         };
 
-        var onSequenceGeneratorCreateFinished = function(err, seqGenCreateStatus, accountId, streamName){
+        var onSequenceGeneratorCreateFinished = function(err, event, seqGenCreateStatus, accountId, streamName){
             if(!err) {
                 internals.eventStreamAndSequenceGenInitialized = true;
-                cb(null, seqGenCreateStatus, accountId, streamName)
+                cb(null, seqGenCreateStatus, accountId, streamName, event)
             }else
-                cb(err, null, accountId, streamName);
+                cb(err, null, accountId, streamName, event);
         };
 
         createStream(tableName, accountId, streamName, onStreamTableCreateFinished);

@@ -11,7 +11,9 @@ var SequenceGenerator = {
 
             r.table(constants.eventSeqTableName)
                 .get(tableName)
-                .update({sequence_number: r.rows('sequence_number').add(1)},
+                .update({sequence_number: r.row('sequence_number').add(1),
+                         _updatedAt: new Date()
+                        },
                         {durability: 'hard', returnChanges: true})
                 .run(conn, function(err, result){
                     if(result.skipped == 1)
