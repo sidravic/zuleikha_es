@@ -6,11 +6,9 @@ var NameGeneratorService = {
 
 
     getQueueName: function(accountId, streamName){
-        var aphlanumAccountId = accountId.toString().replace(/-/g, '');
-        return aphlanumAccountId + "." + streamName;
+        var alphanumAccountId = accountId.toString().replace(/-/g, '');
+        return alphanumAccountId + "." + streamName;
     }
-
-
 };
 
 

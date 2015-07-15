@@ -60,6 +60,7 @@ var listen = function(){
                              errMessage.join('. '),
                              _event)
         }else if(err){
+            console.log(err);
             sendNotification(persistedEvent.accountId,
                 persistedEvent.stream,
                 false,

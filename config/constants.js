@@ -7,6 +7,12 @@ var Constants = {
     Commands: {
         createNewStreamRequested: 'createNewStreamRequest',
         newEvent: 'newEvent'
+    },
+    childProcess: {
+        events: {
+            subscribe: 'subscribe',
+            unsubscribe: 'unsubscribe'
+        }
     }
 }
 
