@@ -64,7 +64,6 @@ var Changes = {
         eventEmitter.on('ready', function(queueName, connectionObject){
             console.log('Ready Here');
             console.log(queueName);
-            console.log(connectionObject);
             liveConnections[queueName] = connectionObject
             console.log("Ready: " + queueName);
         })
@@ -86,8 +85,12 @@ var Changes = {
 }
 
 process.on('message', function(commandMessage){
-    if(commandMessage.command == constants.childProcess.events.subscribe)
+    console.log('+++++++++++++++++++++++++++++++++++++++++++')
+    console.log(commandMessage);
+    if(commandMessage.command == constants.childProcess.events.subscribe) {
         Changes.subscribe(commandMessage.accountId, commandMessage.streamName);
+        console.log('Subscription made on the subscription process.');
+    }
     else if (commandMessage.command = constants.childProcess.events.unsubscribe)
         Changes.unsubscribe(commandMessage.accountId, commandMessage.streamName)
 })

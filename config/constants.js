@@ -6,7 +6,9 @@ var Constants = {
     eventsAttributeStream: 'stream_name',
     Commands: {
         createNewStreamRequested: 'createNewStreamRequest',
-        newEvent: 'newEvent'
+        newEvent: 'newEvent',
+        subscribeEvent: 'subscribeEvent',
+        unsubscribeEvent: 'unsubscribeEvent'
     },
     childProcess: {
         events: {

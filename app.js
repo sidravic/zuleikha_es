@@ -16,38 +16,12 @@ function startServer(dbConn){
         server.start(function(){
             console.log('Server connected to port ' + server.info.uri);
 
-
-            //var C = require('./lib/datastores/rethinkdb/changes.js');
-            //
-            //setTimeout(function(){
-            //    console.log("Subscribing to the stream now")
-            //    C.subscribe('test_stream')
-            //}, 4000);
-            //
-            //setTimeout(function(){
-            //    var P = require('./lib/datastores/rethinkdb/persistence.js');
-            //
-            //    setInterval(function(){
-            //        var time = new Date();
-            //        var datadump = Math.random() * 1000;
-            //
-            //        P.save('test_stream', {datadump: datadump,
-            //                time: time},
-            //            function(err, insertedValue){
-            //                if(err)
-            //                    throw err;
-            //                else
-            //                    console.log('Inserted Value ' + util.inspect(insertedValue));
-            //            });
-            //
-            //    }, 12)
-            //}, 4000)
-
             var serviceBus = require('./config/servicebus.js');
             var commandListenerService = require('./services/command_listener_service.js');
             var constants = require('./config/constants.js');
             commandListenerService.init();
             //
+
             console.log('Subscribing...');
             console.log('subscribing...');
             var nameS = require('./services/name_generator_service.js');
@@ -59,6 +33,15 @@ function startServer(dbConn){
                 console.log(util.inspect(event));
                 console.log(' ======================================================================= ')
             })
+
+
+            console.log('subscribing to the event stream');
+            serviceBus.publish('eventstore.commands', {
+                command: 'subscribeEvent',
+                accountId: '42d19749-fb48-4373-8f7a-b80170255644',
+                streamName: 'test_stream_10'
+            });
+
             var subscriptionQueueName = channelName + '.responses'
             //console.log('____________________________')
             //console.log(subscriptionQueueName);
@@ -91,27 +74,28 @@ function startServer(dbConn){
             //var vp =  require('./services/validate_and_persist_pipeline_service.js');
             //vp.save('42d19749-fb48-4373-8f7a-b80170255644', 'test_stream_10',
             //    { _createdAt: new Date() })
-            var childProcess = require('child_process');
+            //var childProcess = require('child_process');
             //var changes = require('./services/event_stream_subscription_service.js');
-            var child = childProcess.fork('./services/event_stream_subscription_service.js');
-            child.send({command: 'subscribe',
-                        accountId: '42d19749-fb48-4373-8f7a-b80170255644',
-                        streamName: 'test_stream_10'});
-
-            child.on('exit', function(){
-                console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                console.log('Child crashed');
-            })
+            //var child = childProcess.fork('./services/event_stream_subscription_service.js');
+            //
+            //child.send({command: 'subscribe',
+            //            accountId: '42d19749-fb48-4373-8f7a-b80170255644',
+            //            streamName: 'test_stream_10'});
+            //
+            //child.on('exit', function(){
+            //    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            //    console.log('Child crashed');
+            //})
             //changes.init();
 
 
             setTimeout(function(){
-                child.send({
-                    command: 'unsubscribe',
+                serviceBus.publish('eventstore.commands',{
+                    command:'unsubscribeEvent',
                     accountId: '42d19749-fb48-4373-8f7a-b80170255644',
                     streamName: 'test_stream_10'
                 })
-            }, 8000)
+            }, 10000)
 
 
             var i =0;
