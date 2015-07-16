@@ -8,12 +8,15 @@ var Constants = {
         createNewStreamRequested: 'createNewStreamRequest',
         newEvent: 'newEvent',
         subscribeEvent: 'subscribeEvent',
-        unsubscribeEvent: 'unsubscribeEvent'
+        unsubscribeEvent: 'unsubscribeEvent',
+        subscribeCatchupStreamEvent: 'subscribeCatchupStreamEvent',
+        unsubscribeCatchupStreamEvent: 'unsubscribeCatchupStreamEvent'
     },
     childProcess: {
         events: {
             subscribe: 'subscribe',
-            unsubscribe: 'unsubscribe'
+            unsubscribe: 'unsubscribe',
+            subscribeCatchupStreamEvent: 'subscribeCatchupStreamEvent'
         }
     }
 }

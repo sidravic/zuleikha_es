@@ -20,7 +20,6 @@ function startServer(dbConn){
             var commandListenerService = require('./services/command_listener_service.js');
             var constants = require('./config/constants.js');
             commandListenerService.init();
-            //
 
             console.log('Subscribing...');
             console.log('subscribing...');
@@ -36,82 +35,47 @@ function startServer(dbConn){
 
 
             console.log('subscribing to the event stream');
-            serviceBus.publish('eventstore.commands', {
-                command: 'subscribeEvent',
-                accountId: '42d19749-fb48-4373-8f7a-b80170255644',
-                streamName: 'test_stream_10'
-            });
+            //serviceBus.publish('eventstore.commands', {
+            //    command: 'subscribeEvent',
+            //    accountId: '42d19749-fb48-4373-8f7a-b80170255644',
+            //    streamName: 'test_stream_10'
+            //});
 
             var subscriptionQueueName = channelName + '.responses'
-            //console.log('____________________________')
-            //console.log(subscriptionQueueName);
-            //console.log('____________________________')
-            //serviceBus.subscribe(subscriptionQueueName, function(event){
-            //    console.log('++++++++++++++++')
-            //    console.log(event);
-            //    console.log('++++++++++++++++')
-            //});
-            //
-            //
-            //var i = 0;
+
+
+            //setTimeout(function(){
+            //    serviceBus.publish('eventstore.commands',{
+            //        command:'unsubscribeEvent',
+            //        accountId: '42d19749-fb48-4373-8f7a-b80170255644',
+            //        streamName: 'test_stream_10'
+            //    })
+            //}, 10000)
+
+
+            serviceBus.publish('eventstore.commands', {
+                accountId: '42d19749-fb48-4373-8f7a-b80170255644',
+                streamName: 'test_stream_10',
+                startSequenceId: 1000,
+                endSequenceId: 2000,
+                command: 'subscribeCatchupStreamEvent'
+            })
+
+
+            //var i =0;
             //setInterval(function(){
             //    ++i;
             //
             //    serviceBus.publish('eventstore.commands', {
+            //        command: 'newEvent',
             //        accountId: '42d19749-fb48-4373-8f7a-b80170255644',
-            //        streamName: 'test_stream_11',
-            //        command: 'createNewStreamRequest',
-            //        id: i,
-            //        payload: {
-            //            name: 'siddharth',
-            //            email: 'siddharth@idyllic-software.com',
-            //            age: 31
+            //        streamName: 'test_stream_10',
+            //        eventAttributes: {
+            //            timestamp: new Date(),
+            //            number: i
             //        }
             //    })
-            //}, 3000)
-
-
-            //var vp =  require('./services/validate_and_persist_pipeline_service.js');
-            //vp.save('42d19749-fb48-4373-8f7a-b80170255644', 'test_stream_10',
-            //    { _createdAt: new Date() })
-            //var childProcess = require('child_process');
-            //var changes = require('./services/event_stream_subscription_service.js');
-            //var child = childProcess.fork('./services/event_stream_subscription_service.js');
-            //
-            //child.send({command: 'subscribe',
-            //            accountId: '42d19749-fb48-4373-8f7a-b80170255644',
-            //            streamName: 'test_stream_10'});
-            //
-            //child.on('exit', function(){
-            //    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            //    console.log('Child crashed');
-            //})
-            //changes.init();
-
-
-            setTimeout(function(){
-                serviceBus.publish('eventstore.commands',{
-                    command:'unsubscribeEvent',
-                    accountId: '42d19749-fb48-4373-8f7a-b80170255644',
-                    streamName: 'test_stream_10'
-                })
-            }, 10000)
-
-
-            var i =0;
-            setInterval(function(){
-                ++i;
-
-                serviceBus.publish('eventstore.commands', {
-                    command: 'newEvent',
-                    accountId: '42d19749-fb48-4373-8f7a-b80170255644',
-                    streamName: 'test_stream_10',
-                    eventAttributes: {
-                        timestamp: new Date(),
-                        number: i
-                    }
-                })
-            }, 3000)
+            //}, 4000)
 
 
 
