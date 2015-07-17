@@ -10,7 +10,9 @@ var internals = {};
 internals.createNewStreamRequested = constants.Commands.createNewStreamRequested;
 internals.newEvent                 = constants.Commands.newEvent;
 internals.subscribeEvent           = constants.Commands.subscribeEvent;
-internals.unsubscribeEvent         = constants.Commands.unsubscribeEvent
+internals.unsubscribeEvent         = constants.Commands.unsubscribeEvent;
+internals.subscribeCatchupStreamEvent   = constants.Commands.subscribeCatchupStreamEvent;
+internals.unsubscribeCatchupStreamEvent = constants.Commands.unsubscribeCatchupStreamEvent;
 internals.subscriptionServiceProcess = null;
 
 var forkChildProcess = function(subscriptionServiceFile){
@@ -34,6 +36,19 @@ var setupExitListeners = function(child){
     })
 };
 
+var setupCatchupExitListeners = function(child){
+    console.log('setuping Catchup Exit Listeners');
+    child.on('exit', function(){
+        internals.catchupSubscriptionServiceProcess = null;
+        forkAndLaunchCatchupService();
+    })
+
+    child.on('message', function(msg){
+        console.log('Message from child process');
+        console.log(msg);
+    })
+}
+
 var forkAndLaunchSubscriptionService = function(){
     var child = forkChildProcess( "./services/event_stream_subscription_service.js");
 
@@ -42,6 +57,17 @@ var forkAndLaunchSubscriptionService = function(){
         setupExitListeners(child);
     }
 };
+
+
+var forkAndLaunchCatchupService = function(){
+    var child = forkChildProcess("./services/event_stream_catchup_subscription_service.js");
+
+    if(child) {
+        internals.catchupSubscriptionServiceProcess = child;
+        setupCatchupExitListeners(child);
+    }
+
+}
 
 
 var listen = function(){
@@ -128,9 +154,18 @@ var listen = function(){
        });
     };
 
+    var subscribeToCatchupStream = function(accountId, streamName,
+                                           streamStartSequenceId, streamEndSequenceId){
+        internals.catchupSubscriptionServiceProcess.send({
+            command: constants.childProcess.events.subscribeCatchupStreamEvent,
+            accountId: accountId,
+            startSequenceId: streamStartSequenceId,
+            endSequenceId: streamEndSequenceId,
+            streamName: streamName
+        });
+    }
+
     var onNewCommand = function(newCommand){
-        console.log('New Command');
-        console.log(newCommand);
         switch(newCommand.command){
             case internals.createNewStreamRequested:
                 debugger;
@@ -154,6 +189,14 @@ var listen = function(){
                 unsubscribeFromStream(newCommand.accountId,
                                       newCommand.streamName)
                 break;
+            case internals.subscribeCatchupStreamEvent:
+                console.log('Catch Stream Request arrived');
+                console.log(newCommand);
+                subscribeToCatchupStream(newCommand.accountId,
+                    newCommand.streamName,
+                    newCommand.startSequenceId,
+                    newCommand.endSequenceId);
+                break;
             default:
                 break
         }
@@ -176,6 +219,7 @@ var CommandListenerService = {
     init: function(){
         listen();
         forkAndLaunchSubscriptionService();
+        forkAndLaunchCatchupService();
     }
 }
 
