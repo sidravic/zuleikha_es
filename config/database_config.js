@@ -1,7 +1,7 @@
 var config = {
     development: {
         replicaCount: 1,
-        rabbitmq_url: 'amqp://localhost:5672',
+        rabbitmq_url: 'amqp://client:client@localhost:5672',
         store: 'rethinkdb',
         servers: [
             {host: '127.0.0.1', port: 28015, proxy: true},
