@@ -16,7 +16,6 @@ internals.unsubscribeCatchupStreamEvent = constants.Commands.unsubscribeCatchupS
 internals.subscriptionServiceProcess = null;
 
 var forkChildProcess = function(subscriptionServiceFile){
-    debugger;
     var child = childProcess.fork(subscriptionServiceFile);
     console.log('Child process forked');
     return child;
