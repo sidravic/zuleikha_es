@@ -56,7 +56,6 @@ var validateAndPersist = function(accountId, streamName,
 
 
     ], function(err, persistedEvent){
-        debugger;
         if(err && (err.name == 'ValidationError'))
             cb(err, persistedEvent);
         else if(err)

@@ -9,13 +9,11 @@ var _ = require('lodash');
 var server = require('./../app.js');
 var nameGeneratorService = require('./name_generator_service.js')
 var util   = require('util');
+var Logger = require('./../config/logger.js');
 
 var internals = {};
 internals.eventStreamAndSequenceGenInitialized = false;
-
 var server = require('./../app.js');
-server.app.eventStreamAndSequenceGenInitialized = internals.eventStreamAndSequenceGenInitialized
-
 
 var createStream = function(tableName, accountId, streamName, callback){
     exec(function(conn){
@@ -25,8 +23,9 @@ var createStream = function(tableName, accountId, streamName, callback){
             },
 
             function createStreamTable(tables, cb){
-                if(_.includes(tables, tableName))
-                    cb(null, true)
+                if(_.includes(tables, tableName)) {
+                    Logger.info(['event_stream_create_service.js'], 'Table Exists ' + util.inspect(tableName));
+                    cb(null, true)                }
                 else
                     r.tableCreate(tableName, {
                         primaryKey: 'sequence_id',
@@ -36,11 +35,11 @@ var createStream = function(tableName, accountId, streamName, callback){
             }
         ], function(err, result){
             if(err) {
-                console.log('[ERROR] ' + util.inspect(err));
+                Logger.error(['event_stream_create_service.js'], '[ERROR] ' + util.inspect(err));
                 callback(err, result, accountId, streamName);
             }
             else {
-                console.log('Stream Create ' + util.inspect(result));
+                Logger.info(['event_stream_create_service.js'], 'Stream Create ' + util.inspect(result));
                 callback(null, result, accountId, streamName);
             }
         })
@@ -59,9 +58,14 @@ var EventStreamService = {
      **/
     create: function(accountId, streamName, cb){
         var tableName = nameGeneratorService.getTableName(accountId, streamName);
+        Logger.info(['event_stream_create_service.js'], '[Create Stream] AccountId: ' +
+                                                        accountId + " StreamName: " + streamName);
 
         var onStreamTableCreateFinished = function(err, event, accountId,
                                                    streamName) {
+            Logger.info(['event_stream_create_service.js'], '[Create Stream Finished] AccountId: ' +
+                accountId + " StreamName: " + streamName);
+
             if(err)
                 cb(err, null);
             else {
@@ -72,6 +76,8 @@ var EventStreamService = {
         };
 
         var onSequenceGeneratorCreateFinished = function(err, event, seqGenCreateStatus, accountId, streamName){
+            Logger.info(['event_stream_create_service.js'], '[Create Stream Sequence Generation Table Create Finished] AccountId: ' +
+                accountId + " StreamName: " + streamName);
             if(!err) {
                 internals.eventStreamAndSequenceGenInitialized = true;
                 cb(null, seqGenCreateStatus, accountId, streamName, event)

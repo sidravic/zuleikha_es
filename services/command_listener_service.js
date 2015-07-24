@@ -5,7 +5,10 @@ var eventStreamCreateService = require('./event_stream_create_service.js');
 var validateAndPersistPipelineService = require('./validate_and_persist_pipeline_service.js');
 var childProcess             = require('child_process');
 var _ = require('lodash');
+var Logger                   = require('./../config/logger.js');
+var util                     = require('util')
 var internals = {};
+
 
 internals.createNewStreamRequested = constants.Commands.createNewStreamRequested;
 internals.newEvent                 = constants.Commands.newEvent;
@@ -73,23 +76,30 @@ var listen = function(){
     var sendNotification = function(accountId, streamName,
                                     status, message, event){
         var channel = nameGeneratorService.getQueueName(accountId, streamName) + ".responses"
-        debugger;
+
         if(message == undefined)
             message = {};
 
         if(event == undefined)
             event = {};
 
-        if(status)
-            serviceBus.publish(channel, {status: true,
-                                         message: 'success',
-                                         event: event
-                                        })
-        else
-            serviceBus.publish(channel, {status: false,
-                                         message: message,
-                                         event: event
-                                        });
+        Logger.info(['command_listener_service.js'], "channel: " + channel +
+            " Message: " + util.inspect(message) +
+            " status:" + util.inspect(status) + " Event:" + util.inspect(event));
+        if(status) {
+            serviceBus.publish(channel, {
+                status: true,
+                message: 'success',
+                event: event
+            })
+        }
+        else {
+            serviceBus.publish(channel, {
+                status: false,
+                message: message,
+                event: event
+            });
+        }
     }
 
     var onStreamCreated = function(err, streamCreateStatus, accountId, streamName, event){
@@ -97,9 +107,11 @@ var listen = function(){
                        eventStatus: event
                      };
 
-        if(err)
+        if(err) {
+            Logger.info(['command_listener_service.js'], 'StreamCreated: ' + util.inspect(_event));
             sendNotification(accountId, streamName,
-                             err, err.message, _event);
+                false, err.message, _event);
+        }
         else
             sendNotification(accountId, streamName,
                                 true, 'success', _event);
@@ -120,7 +132,8 @@ var listen = function(){
                              errMessage.join('. '),
                              _event)
         }else if(err){
-            console.log(err);
+            Logger.error(['command_listener_service.js'], "Event could not be persisted " + util.inspect(err) +
+                                        " Event: " + util.inspect(_event));
             sendNotification(persistedEvent.accountId,
                 persistedEvent.stream,
                 false,
@@ -165,9 +178,9 @@ var listen = function(){
     }
 
     var onNewCommand = function(newCommand){
+        Logger.info(['command_listener_service.js'], 'New Command Arrived: ' + util.inspect(newCommand));
         switch(newCommand.command){
             case internals.createNewStreamRequested:
-                debugger;
                 eventStreamCreateService.create(newCommand.accountId,
                     newCommand.streamName,
                     onStreamCreated
@@ -197,6 +210,12 @@ var listen = function(){
                     newCommand.endSequenceId);
                 break;
             default:
+                console.log("Don't know what to do with this command")
+                console.log(newCommand);
+                if(newCommand.accountId && newCommand.streamName)
+                    sendNotification(newCommand.accountId,
+                                     newCommand.streamName,
+                                     false, null)
                 break
         }
     };
@@ -215,7 +234,7 @@ var listen = function(){
 }
 
 var CommandListenerService = {
-    init: function(){
+    init: function(callback){
         listen();
         forkAndLaunchSubscriptionService();
         forkAndLaunchCatchupService();
@@ -233,8 +252,10 @@ var CommandListenerService = {
             catupSubscriptionServiceChildProcess.removeAllListeners();
             catupSubscriptionServiceChildProcess.kill();
             console.log('done');
-            //process.kill();
+            process.kill();
         })
+
+        callback(true);
 
     }
 }
