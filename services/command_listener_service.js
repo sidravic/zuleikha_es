@@ -15,6 +15,7 @@ internals.subscribeCatchupStreamEvent   = constants.Commands.subscribeCatchupStr
 internals.unsubscribeCatchupStreamEvent = constants.Commands.unsubscribeCatchupStreamEvent;
 internals.subscriptionServiceProcess = null;
 
+
 var forkChildProcess = function(subscriptionServiceFile){
     var child = childProcess.fork(subscriptionServiceFile);
     console.log('Child process forked');
@@ -65,7 +66,6 @@ var forkAndLaunchCatchupService = function(){
         internals.catchupSubscriptionServiceProcess = child;
         setupCatchupExitListeners(child);
     }
-
 }
 
 
@@ -219,7 +219,25 @@ var CommandListenerService = {
         listen();
         forkAndLaunchSubscriptionService();
         forkAndLaunchCatchupService();
+
+        process.on('SIGINT', function(){
+            console.log('Interrupt called');
+            console.log('Shutting down subscription service...')
+            var subscriptionServiceChildProcess = internals.subscriptionServiceProcess;
+            subscriptionServiceChildProcess.removeAllListeners();
+            subscriptionServiceChildProcess.kill();
+            console.log('done');
+
+            console.log('Shutting down catchup subscription service');
+            var catupSubscriptionServiceChildProcess = internals.catchupSubscriptionServiceProcess;
+            catupSubscriptionServiceChildProcess.removeAllListeners();
+            catupSubscriptionServiceChildProcess.kill();
+            console.log('done');
+            //process.kill();
+        })
+
     }
 }
+
 
 module.exports = CommandListenerService;

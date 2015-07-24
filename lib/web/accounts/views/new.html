@@ -1,5 +1,17 @@
+<% if (typeof(errorMessages) != 'undefined' && !(_.isEmpty(errorMessages))){ %>
+    <div class="alert alert-danger" role="alert">
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+        <span class="sr-only">Error:</span>
+        <ul>            
+            <% _.each(errorMessages, function(error){ %>
+                <li><%= error.message %></li>
+            <% }) %>
+        </ul>
+    </div>
+<% } %>
+
 <div class="row">
-    <form action="/accounts" method="post">
+    <form action="/accounts" method="post">        
         <div class="form-group">
             <input type="hidden" value="<%= crumb %>" name="crumb"/>
             <label for="email">Email address</label>
