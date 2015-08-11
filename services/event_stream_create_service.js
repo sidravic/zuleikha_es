@@ -10,6 +10,8 @@ var server = require('./../app.js');
 var nameGeneratorService = require('./name_generator_service.js')
 var util   = require('util');
 var Logger = require('./../config/logger.js');
+var accountsService = require('./../lib/web/accounts/services/account_services.js');
+
 
 var internals = {};
 internals.eventStreamAndSequenceGenInitialized = false;
@@ -61,17 +63,16 @@ var EventStreamService = {
         Logger.info(['event_stream_create_service.js'], '[Create Stream] AccountId: ' +
                                                         accountId + " StreamName: " + streamName);
 
-        var onStreamTableCreateFinished = function(err, event, accountId,
-                                                   streamName) {
+        var onStreamTableCreateFinished = function(err, event, accountId, streamName) {
             Logger.info(['event_stream_create_service.js'], '[Create Stream Finished] AccountId: ' +
-                accountId + " StreamName: " + streamName);
+                                                              accountId + " StreamName: " + streamName);
 
             if(err)
-                cb(err, null);
+                cb(err, false, accountId, streamName, event);
             else {
                 sequenceGeneratorService.create(tableName, accountId,
-                    streamName, event,
-                    onSequenceGeneratorCreateFinished);
+                                                streamName, event,
+                                                onSequenceGeneratorCreateFinished);
             }
         };
 
@@ -80,10 +81,23 @@ var EventStreamService = {
                 accountId + " StreamName: " + streamName);
             if(!err) {
                 internals.eventStreamAndSequenceGenInitialized = true;
+
                 cb(null, seqGenCreateStatus, accountId, streamName, event)
-            }else
-                cb(err, null, accountId, streamName, event);
+            }else {
+                var onAddStream = function(err, result){
+                    if(err){
+                        cb(err, null, accountId, streamName, event)
+                    }else{
+                        cb(null, result, accountId, streamName, event);
+                    }
+                };
+
+                accountsService.addStream(accountId, streamName, onAddStream);
+            }
         };
+
+
+
 
         createStream(tableName, accountId, streamName, onStreamTableCreateFinished);
     }

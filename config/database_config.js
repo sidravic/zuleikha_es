@@ -1,6 +1,6 @@
 var config = {
     development: {
-        replicaCount: 1,
+        replicaCount: 2,
         rabbitmq_url: 'amqp://client:client@localhost:5672',
         store: 'rethinkdb',
         servers: [
@@ -8,7 +8,7 @@ var config = {
             {host: '127.0.0.1', port: 28016, proxy: false},
             {host: '127.0.0.1', port: 28018, proxy: false},
         ],
-        databaseName: 'event_store_development'
+        databaseName: 'event_store_development_2'
     },
 
     staging: {

@@ -188,6 +188,7 @@ var listen = function(){
                 break;
 
             case internals.newEvent:
+                Logger.info(['command_listener_service.js'], 'New Event Arrived: ' + util.inspect(newCommand));
                 validateAndPersistPipelineService.save(newCommand.accountId,
                     newCommand.streamName,
                     newCommand.eventAttributes,
@@ -252,7 +253,7 @@ var CommandListenerService = {
             catupSubscriptionServiceChildProcess.removeAllListeners();
             catupSubscriptionServiceChildProcess.kill();
             console.log('done');
-            process.kill();
+            //process.kill();
         })
 
         callback(true);

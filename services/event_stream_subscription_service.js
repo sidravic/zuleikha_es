@@ -8,6 +8,7 @@ var nameGeneratorService   = require('./name_generator_service.js');
 var events                 = require('events');
 var constants              = require('./../config/constants.js');
 var eventEmitter           = new events.EventEmitter();
+var Logger                 = require('./../config/logger.js');
 
 var publishEvent = function(queueName, event){
     console.log('_____________________________________________')
@@ -30,9 +31,10 @@ var activateSubscription = function(accountId, streamName, queueName){
                 else {
                     eventEmitter.emit('ready', queueName, conn);
                     cursor.each(function publishNextEvent(err, event) {
-                        if (err)
+                        if (err) {
+                            Logger.error(['event_stream_subscription_service'], "Error:  " + util.inspect(err));
                             return;
-
+                        }
                         if (event.new_val.stream == streamName)
                             publishEvent(queueName, event.new_val);
                     }, function onFinished() {

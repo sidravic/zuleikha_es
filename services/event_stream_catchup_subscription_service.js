@@ -31,7 +31,9 @@ var activateCatchupStream = function(accountId, streamName,
 
     var closeConnection = function(queueName){
         var conn = internals.liveConnections[queueName];
-        conn.close();
+        if(conn)
+            conn.close();
+
         delete internals.liveConnections[queueName];
     }
 
