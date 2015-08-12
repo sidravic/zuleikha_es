@@ -59,6 +59,7 @@ var EventStreamService = {
      *  foreign_key: account_id
      **/
     create: function(accountId, streamName, cb){
+        debugger;
         var tableName = nameGeneratorService.getTableName(accountId, streamName);
         Logger.info(['event_stream_create_service.js'], '[Create Stream] AccountId: ' +
                                                         accountId + " StreamName: " + streamName);
@@ -82,8 +83,6 @@ var EventStreamService = {
             if(!err) {
                 internals.eventStreamAndSequenceGenInitialized = true;
 
-                cb(null, seqGenCreateStatus, accountId, streamName, event)
-            }else {
                 var onAddStream = function(err, result){
                     if(err){
                         cb(err, null, accountId, streamName, event)
@@ -91,13 +90,12 @@ var EventStreamService = {
                         cb(null, result, accountId, streamName, event);
                     }
                 };
-
+                debugger;
                 accountsService.addStream(accountId, streamName, onAddStream);
+            }else {
+                cb(err, null, accountId, streamName, event);
             }
         };
-
-
-
 
         createStream(tableName, accountId, streamName, onStreamTableCreateFinished);
     }
