@@ -7,6 +7,7 @@ var logger = require('./config/logger.js');
 //var db   = require('./lib/datastores/rethinkdb/init.js');
 var C      = require('./lib/datastores/rethinkdb/connection.js');
 var AccountsApp = require('./lib/web/accounts');
+var Api         = require('./lib/web/api');
 var CommandListenerService = require('./services/command_listener_service.js');
 
 
@@ -26,13 +27,23 @@ function startServer(dbConn){
         console.log('Connection available');
         var port = process.env.PORT || 4005;
         server.connection({port: port});
+        var yarOptions = {
+            name: '_zuleikha_es_flash',
+            cookieOptions: {
+                password: 'piperatthegatesofdawniscallingyouhisway',
+                isSecure: false,
+            }
+        }
 
 
         server.register([{
-          register: require('crumb'),
-          options: {}
+            register: Yar,
+            options: yarOptions
         },{
             register: AccountsApp,
+            options: {}
+        },{
+            register: Api,
             options: {}
         }], function(err){
             if(err)
