@@ -14,8 +14,6 @@ var eventSchema =  Joi.object().keys({
 });
 
 
-
-
 var validateAndPersist = function(accountId, streamName,
                                   eventAttributes, cb){
 
@@ -33,7 +31,7 @@ var validateAndPersist = function(accountId, streamName,
         function buildEvent(validEvent, callback){
             var accountId = validEvent.accountId;
             var streamName = validEvent.streamName;
-            var eventAttribtues = validEvent.eventAttributes;
+            var eventAttributes = validEvent.eventAttributes;
 
             var onEvent = function(err, event){
                 debugger;
@@ -41,7 +39,7 @@ var validateAndPersist = function(accountId, streamName,
             }
 
             EventBuilderService.buildEvent(accountId, streamName,
-                                           eventAttribtues, onEvent)
+                                           eventAttributes, onEvent)
         },
 
         function persistEvent(validEvent, callback){
