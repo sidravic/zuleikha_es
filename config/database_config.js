@@ -8,7 +8,7 @@ var config = {
             {host: '127.0.0.1', port: 28016, proxy: false},
             {host: '127.0.0.1', port: 28018, proxy: false},
         ],
-        databaseName: 'event_store_development_2'
+        databaseName: 'event_store_development_3'
     },
 
     staging: {
