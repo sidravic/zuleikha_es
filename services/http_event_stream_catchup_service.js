@@ -14,7 +14,6 @@ var HttpEventStreamCatchUpService = {
         var paginatedEndSequenceId   = startSequenceId + paginateCount;
         var hasMore                  = false;
 
-        debugger;
         if (paginatedEndSequenceId < endSequenceId) {
             hasMore = true;
         }else{
@@ -77,14 +76,9 @@ var HttpEventStreamCatchUpService = {
                 if(result.totalEventsRemaining < result.totalEventsRemainingTillEndSequenceId)
                     eventsRemaining = result.totalEventsRemaining;
 
-                //if((result.totalEventsRemaining > 0) && (result.totalEventsRemainingTillEndSequenceId > 0)){
                 if(eventsRemaining > 0){
                     nextStartSeqId = paginatedEndSequenceId + 1;
-                    nextEndSeqId   = paginatedEndSequenceId + paginateCount;
-
-                    if(eventsRemaining < paginateCount) {
-                        nextEndSeqId = paginatedEndSequenceId + eventsRemaining;
-                    }
+                    nextEndSeqId   = paginatedEndSequenceId + eventsRemaining;
                 };
 
                 var response = {
