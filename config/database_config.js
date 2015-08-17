@@ -19,7 +19,10 @@ var config = {
 
     production: {
         replicaCount: 2,
-        servers: []
+        servers: [],
+        store: 'rethinkdb',
+        rabbitmq_url: 'amqp://ugjleqyy:XJBAwm1u8vIHxqnIZTqI6DlW-Najjlke@owl.rmq.cloudamqp.com/ugjleqyy',
+        databaseName: 'event_store_production'
     }
 
 };
