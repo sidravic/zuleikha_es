@@ -23,6 +23,53 @@ Fibers issues have been resolved.
 12. 
 
 
+# HTTP Web API
+ 
+ 
+1. Create a new stream for your account Id. All request require a
+   
+
+```
+POST /v1/streams/
+```
+
+Headers
+```
+  Authorization: Bearer <your accountToken>
+```
+
+Parameters
+```
+ {
+    streamName: <streamName>
+ }
+ 
+```
+
+
+2. Add a new event to your stream
+ 
+ ```
+ POST /v1/streams/
+ ```
+ 
+ Headers 
+ ```
+   Authorization: Bearer <your accountToken>
+ ```
+
+ 
+ ``` 
+ {
+     eventType: <EventType>,
+     eventAttributes: {
+        email: 'siddharth@abc.com',
+        someOtherParams: 'someOtherParamValue'
+     }
+ }
+ ```
+
+
 # Usage
 
 Zuleikha assumes you're running an instance of RabbitMQ and RethinkDb. 
